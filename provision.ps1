@@ -34,12 +34,12 @@ $ScriptPath = Split-Path $MyInvocation.InvocationName
 Write-Host 'Install Chocolaty'
 Write-Host "###################################################################"
 Start-Process "powershell.exe" `
-  -ArgumentList "$ScriptPath\scripts\chocolaty_install.ps1" -Wait
+  -ArgumentList "$ScriptPath\scripts\chocolaty.ps1" -Wait
 
 Write-Host 'Install Git'
 Write-Host "###################################################################"
 Start-Process "powershell.exe" `
-  -ArgumentList "$ScriptPath\scripts\git_install.ps1" -Wait
+  -ArgumentList "$ScriptPath\scripts\git.ps1" -Wait
 
 Write-Host 'Install Metatrader 4'
 Write-Host "###################################################################"
