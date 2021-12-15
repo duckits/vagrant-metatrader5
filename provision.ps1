@@ -51,6 +51,11 @@ Write-Host "###################################################################"
 Start-Process -ArgumentList '/auto' `
   -FilePath "$ScriptPath\mt5setup.exe" -Wait
 
+Write-Host 'Install Windows Subsystem Linux'
+Write-Host "###################################################################"
+Start-Process "powershell.exe" `
+  -ArgumentList "wsl --install" -Wait
+
 Rename-Computer -NewName $hostName -Force
 
 Write-Host 'Restarting'
