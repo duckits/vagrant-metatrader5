@@ -19,8 +19,11 @@ Vagrant.configure("2") do |config|
     vb.cpus = "4"
   end
 
-  # share this project directory to c:\vagrant
+  # mount this project directory to c:\vagrant
   config.vm.synced_folder "./", "c:/vagrant"
+
+  # mount metatrader source code project into c:\MQL
+  config.vm.synced_folder "/Users/russellsherman/src/github.com/russelltsherman/metatrader", "c:/MQL"
 
   # copy our rsa key to guest
   config.vm.provision "file", source: "~/.ssh/id_rsa", destination: "c:/Users/vagrant/.ssh/id_rsa"
