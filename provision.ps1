@@ -67,25 +67,61 @@ Start-Process -FilePath "C:/Program Files/MetaTrader 5/terminal64.exe"
 
 Start-Sleep -Seconds 60 # pause a minute to let applications launch
 
-# get list of directories in c:/MQL
-$directories = Get-ChildItem c:/MQL/ |
+# get list of directories in C:/metatrader/MQL/
+$directories = Get-ChildItem C:/metatrader/MQL/ |
        Where-Object {$_.PSIsContainer} |
        Foreach-Object {$_.Name}
 
+# symlink our custom code into metatrader installs
 for ($i=0; $i -lt $directories.length; $i++) {
   $folder = $directories[$i]
   New-Item -ItemType SymbolicLink `
     -Path "C:/Program Files (x86)/FOREX.com US/MQL4/$folder/Custom" `
-    -Target "c:/MQL/$folder"
+    -Target "c:/metatrader/MQL/$folder"
   New-Item -ItemType SymbolicLink `
     -Path "C:/Program Files (x86)/IG MetaTrader 4 Terminal/MQL4/$folder/Custom" `
-    -Target "c:/MQL/$folder"
+    -Target "c:/metatrader/MQL/$folder"
   New-Item -ItemType SymbolicLink `
     -Path "C:/Program Files (x86)/OANDA - Metatrader/MQL4/$folder/Custom" `
-    -Target "c:/MQL/$folder"
+    -Target "c:/metatrader/MQL/$folder"
   New-Item -ItemType SymbolicLink `
     -Path "C:/Program Files/MetaTrader 5/MQL5/$folder/Custom" `
-    -Target "c:/MQL/$folder"
+    -Target "c:/metatrader/MQL/$folder"
+}
+
+$preferences = @('config','profiles','templates')
+# symlink our custom configuration into metatrader installs
+for ($i=0; $i -lt $preferences.length; $i++) {
+  $folder = $preferences[$i]
+
+  $localPath = "C:/Program Files (x86)/FOREX.com US/$folder"
+  If (test-path $localPath){
+    Rename-Item -path $localpath -newName "$localPath-og"
+  }
+  New-Item -ItemType SymbolicLink -Path $localPath -Target "c:/metatrader/$folder/mt4"
+
+  $localPath = "C:/Program Files (x86)/IG MetaTrader 4 Terminal/$folder"
+  If (test-path $localPath){
+    Rename-Item -path $localpath -newName "$localPath-og"
+  }
+  New-Item -ItemType SymbolicLink -Path $localPath -Target "c:/metatrader/$folder/mt4"
+
+  $localPath = "C:/Program Files (x86)/OANDA - Metatrader/$folder"
+  If (test-path $localPath){
+    Rename-Item -path $localpath -newName "$localPath-og"
+  }
+  New-Item -ItemType SymbolicLink -Path $localPath -Target "c:/metatrader/$folder/mt4"
+}
+
+$preferences = @('config','profiles')
+# symlink our custom configuration into metatrader installs
+for ($i=0; $i -lt $preferences.length; $i++) {
+  $folder = $preferences[$i]
+  $localPath = "C:/Program Files/MetaTrader 5/$folder"
+  If (test-path $localPath){
+    Rename-Item -path $localpath -newName "$localPath-og"
+  }
+  New-Item -ItemType SymbolicLink -Path $localPath -Target "c:/metatrader/$folder/mt5"
 }
 
 Rename-Computer -NewName $hostName -Force
