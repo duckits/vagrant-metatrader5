@@ -34,95 +34,51 @@ $ScriptPath = Split-Path $MyInvocation.InvocationName
 # mt4setup downloaded from metatrader official installs mt5
 # Write-Host 'Install MetaTrader 4'
 # Write-Host "###################################################################"
-# Start-Process -ArgumentList '/auto' `
-#   -FilePath "$ScriptPath\mt4setup.exe" -Wait
+# Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\mt4setup.exe" -Wait
 
-Write-Host 'Install MetaTrader 4 (forexcom)'
-Write-Host "###################################################################"
-Start-Process -ArgumentList '/auto' `
-  -FilePath "$ScriptPath\forexcom4setup.exe" -Wait
+# Write-Host 'Install MetaTrader 4 (forexcom)'
+# Write-Host "###################################################################"
+# Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\forexcom4setup.exe" -Wait
 
-Write-Host 'Install MetaTrader 4 (ig)'
-Write-Host "###################################################################"
-Start-Process -ArgumentList '/auto' `
-  -FilePath "$ScriptPath\ig4setup.exe" -Wait
+# Write-Host 'Install MetaTrader 4 (ig)'
+# Write-Host "###################################################################"
+# Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\ig4setup.exe" -Wait
 
 Write-Host 'Install MetaTrader 4 (oanda)'
 Write-Host "###################################################################"
-Start-Process -ArgumentList '/auto' `
-  -FilePath "$ScriptPath\oanda4setup.exe" -Wait
-
-Write-Host 'Install MetaTrader 5'
-Write-Host "###################################################################"
-Start-Process -ArgumentList '/auto' `
-  -FilePath "$ScriptPath\mt5setup.exe" -Wait
-
-# before symlinking our custom metatrader code
-# we need to ensure the applications have been launched at least once
-# otherwise the expected directories won't exist.
-Start-Process -FilePath "C:/Program Files (x86)/FOREX.com US/terminal.exe"
-Start-Process -FilePath "C:/Program Files (x86)/IG MetaTrader 4 Terminal/terminal.exe"
-Start-Process -FilePath "C:/Program Files (x86)/OANDA - Metatrader/terminal.exe"
-Start-Process -FilePath "C:/Program Files/MetaTrader 5/terminal64.exe"
-
-Start-Sleep -Seconds 60 # pause a minute to let applications launch
-
-# get list of directories in C:/metatrader/MQL/
-$directories = Get-ChildItem C:/metatrader/MQL/ |
-       Where-Object {$_.PSIsContainer} |
-       Foreach-Object {$_.Name}
-
-# symlink our custom code into metatrader installs
-for ($i=0; $i -lt $directories.length; $i++) {
-  $folder = $directories[$i]
-  New-Item -ItemType SymbolicLink `
-    -Path "C:/Program Files (x86)/FOREX.com US/MQL4/$folder/Custom" `
-    -Target "c:/metatrader/MQL/$folder"
-  New-Item -ItemType SymbolicLink `
-    -Path "C:/Program Files (x86)/IG MetaTrader 4 Terminal/MQL4/$folder/Custom" `
-    -Target "c:/metatrader/MQL/$folder"
-  New-Item -ItemType SymbolicLink `
-    -Path "C:/Program Files (x86)/OANDA - Metatrader/MQL4/$folder/Custom" `
-    -Target "c:/metatrader/MQL/$folder"
-  New-Item -ItemType SymbolicLink `
-    -Path "C:/Program Files/MetaTrader 5/MQL5/$folder/Custom" `
-    -Target "c:/metatrader/MQL/$folder"
-}
+Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\oanda4setup.exe" -Wait
 
 $preferences = @('config','profiles','templates')
-# symlink our custom configuration into metatrader installs
+# symlink our custom configuration into metatrader install
 for ($i=0; $i -lt $preferences.length; $i++) {
   $folder = $preferences[$i]
-
-  $localPath = "C:/Program Files (x86)/FOREX.com US/$folder"
-  If (test-path $localPath){
-    Rename-Item -path $localpath -newName "$localPath-og"
-  }
-  New-Item -ItemType SymbolicLink -Path $localPath -Target "c:/metatrader/$folder/mt4"
-
-  $localPath = "C:/Program Files (x86)/IG MetaTrader 4 Terminal/$folder"
-  If (test-path $localPath){
-    Rename-Item -path $localpath -newName "$localPath-og"
-  }
-  New-Item -ItemType SymbolicLink -Path $localPath -Target "c:/metatrader/$folder/mt4"
-
   $localPath = "C:/Program Files (x86)/OANDA - Metatrader/$folder"
   If (test-path $localPath){
     Rename-Item -path $localpath -newName "$localPath-og"
   }
-  New-Item -ItemType SymbolicLink -Path $localPath -Target "c:/metatrader/$folder/mt4"
+  New-Item -ItemType SymbolicLink -Path $localPath -Target "c:/metatrader/MT4/$folder/"
 }
+# symlink our custom code into metatrader install
+New-Item -ItemType SymbolicLink -Path "C:/Program Files (x86)/OANDA - Metatrader/MQL4/" -Target "c:/metatrader/MQL4/"
 
-$preferences = @('config','profiles')
-# symlink our custom configuration into metatrader installs
+
+Write-Host 'Install MetaTrader 5'
+Write-Host "###################################################################"
+Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\mt5setup.exe" -Wait
+
+# symlink our custom configuration into metatrader 5 install
+$preferences = @('Config','Profiles')
 for ($i=0; $i -lt $preferences.length; $i++) {
   $folder = $preferences[$i]
   $localPath = "C:/Program Files/MetaTrader 5/$folder"
   If (test-path $localPath){
     Rename-Item -path $localpath -newName "$localPath-og"
   }
-  New-Item -ItemType SymbolicLink -Path $localPath -Target "c:/metatrader/$folder/mt5"
+  New-Item -ItemType SymbolicLink -Path $localPath -Target "c:/metatrader/MT5/$folder"
 }
+# symlink our custom code into metatrader 5 install
+New-Item -ItemType SymbolicLink -Path "C:/Program Files/MetaTrader 5/MQL5/" -Target "c:/metatrader/MQL5/"
+
 
 Rename-Computer -NewName $hostName -Force
 
