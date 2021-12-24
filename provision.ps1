@@ -32,23 +32,27 @@ Set-ItemProperty `
 $ScriptPath = Split-Path $MyInvocation.InvocationName
 
 # mt4setup downloaded from metatrader official installs mt5
+# Write-Host "###################################################################"
 # Write-Host 'Install MetaTrader 4'
 # Write-Host "###################################################################"
 # Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\mt4setup.exe" -Wait
 
+# Write-Host "###################################################################"
 # Write-Host 'Install MetaTrader 4 (forexcom)'
 # Write-Host "###################################################################"
 # Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\forexcom4setup.exe" -Wait
 
+# Write-Host "###################################################################"
 # Write-Host 'Install MetaTrader 4 (ig)'
 # Write-Host "###################################################################"
 # Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\ig4setup.exe" -Wait
 
+Write-Host "###################################################################"
 Write-Host 'Install MetaTrader 4 (oanda)'
 Write-Host "###################################################################"
 Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\oanda4setup.exe" -Wait
 
-$preferences = @('config','profiles','templates')
+$preferences = @('config','MQL4','profiles','templates')
 # symlink our custom configuration into metatrader install
 for ($i=0; $i -lt $preferences.length; $i++) {
   $folder = $preferences[$i]
@@ -58,16 +62,14 @@ for ($i=0; $i -lt $preferences.length; $i++) {
   }
   New-Item -ItemType SymbolicLink -Path $localPath -Target "c:/metatrader/MT4/$folder/"
 }
-# symlink our custom code into metatrader install
-New-Item -ItemType SymbolicLink -Path "C:/Program Files (x86)/OANDA - Metatrader/MQL4/" -Target "c:/metatrader/MQL4/"
 
-
+Write-Host "###################################################################"
 Write-Host 'Install MetaTrader 5'
 Write-Host "###################################################################"
 Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\mt5setup.exe" -Wait
 
 # symlink our custom configuration into metatrader 5 install
-$preferences = @('Config','Profiles')
+$preferences = @('Config','MQL5','Profiles')
 for ($i=0; $i -lt $preferences.length; $i++) {
   $folder = $preferences[$i]
   $localPath = "C:/Program Files/MetaTrader 5/$folder"
@@ -76,9 +78,6 @@ for ($i=0; $i -lt $preferences.length; $i++) {
   }
   New-Item -ItemType SymbolicLink -Path $localPath -Target "c:/metatrader/MT5/$folder"
 }
-# symlink our custom code into metatrader 5 install
-New-Item -ItemType SymbolicLink -Path "C:/Program Files/MetaTrader 5/MQL5/" -Target "c:/metatrader/MQL5/"
-
 
 Rename-Computer -NewName $hostName -Force
 
