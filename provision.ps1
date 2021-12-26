@@ -31,52 +31,63 @@ Set-ItemProperty `
 
 $ScriptPath = Split-Path $MyInvocation.InvocationName
 
-# mt4setup downloaded from metatrader official installs mt5
-# Write-Host "###################################################################"
-# Write-Host 'Install MetaTrader 4'
-# Write-Host "###################################################################"
-# Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\mt4setup.exe" -Wait
-
 # Write-Host "###################################################################"
 # Write-Host 'Install MetaTrader 4 (forexcom)'
 # Write-Host "###################################################################"
 # Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\forexcom4setup.exe" -Wait
+# $installDir = "C:/Program Files (x86)/FOREX.com US"
 
 # Write-Host "###################################################################"
 # Write-Host 'Install MetaTrader 4 (ig)'
 # Write-Host "###################################################################"
 # Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\ig4setup.exe" -Wait
+# $installDir = "C:/Program Files (x86)/IG Metatrader 4 Terminal"
 
 Write-Host "###################################################################"
 Write-Host 'Install MetaTrader 4 (oanda)'
 Write-Host "###################################################################"
 Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\oanda4setup.exe" -Wait
+$installDir = 'C:/Program Files (x86)/OANDA - Metatrader'
 
-$preferences = @('config','MQL4','profiles','templates')
+# # mt4setup downloaded from metatrader official actually installs mt5
+# Write-Host "###################################################################"
+# Write-Host 'Install MetaTrader 4'
+# Write-Host "###################################################################"
+# Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\mt4setup.exe" -Wait
+# # $installDir = "C:/Program Files/Metatrader"
+
+# start the MetaTrader 5 terminal to generate the default MQL5 folders
+# Start-Process -FilePath "$installDir/terminal.exe"
+# Start-Sleep -Seconds 60 # pause a minute to let applications launch
+
+$dirs = @('config','MQL4','profiles','templates')
 # symlink our custom configuration into metatrader install
-for ($i=0; $i -lt $preferences.length; $i++) {
-  $folder = $preferences[$i]
-  $localPath = "C:/Program Files (x86)/OANDA - Metatrader/$folder"
+for ($i=0; $i -lt $dirs.length; $i++) {
+  $dir = $dirs[$i]
+  $localPath = "$installDir/$dir"
   If (test-path $localPath){
     Rename-Item -path $localpath -newName "$localPath-og"
   }
-  New-Item -ItemType SymbolicLink -Path $localPath -Target "c:/metatrader/MT4/$folder/"
+  New-Item -ItemType SymbolicLink -Path $localPath -Target "C:/Users/vagrant/mt4/$dir/"
 }
 
 Write-Host "###################################################################"
 Write-Host 'Install MetaTrader 5'
 Write-Host "###################################################################"
 Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\mt5setup.exe" -Wait
+# start the MetaTrader 5 terminal to generate the default MQL5 folders
+# Start-Process -FilePath "C:/Program Files/MetaTrader 5/terminal64.exe"
+# Start-Sleep -Seconds 60 # pause a minute to let applications launch
 
 # symlink our custom configuration into metatrader 5 install
-$preferences = @('Config','MQL5','Profiles')
-for ($i=0; $i -lt $preferences.length; $i++) {
-  $folder = $preferences[$i]
-  $localPath = "C:/Program Files/MetaTrader 5/$folder"
-  If (test-path $localPath){
+$dirs = @('Config','MQL5','Profiles')
+for ($i=0; $i -lt $dirs.length; $i++) {
+  $dir = $dirs[$i]
+  $localPath = "C:/Program Files/MetaTrader 5/$dir"
+  If (test-path $localPath){ # rename directory if it exists
     Rename-Item -path $localpath -newName "$localPath-og"
   }
-  New-Item -ItemType SymbolicLink -Path $localPath -Target "c:/metatrader/MT5/$folder"
+  New-Item -ItemType SymbolicLink -Path $localPath -Target "C:/Users/vagrant/mt5/$dir"
 }
 
 Rename-Computer -NewName $hostName -Force

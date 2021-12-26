@@ -22,8 +22,10 @@ Vagrant.configure("2") do |config|
   # mount this project directory to c:\vagrant
   config.vm.synced_folder "./", "c:/vagrant"
 
-  # mount metatrader source code project into c:\MQL
-  config.vm.synced_folder "/Users/russellsherman/src/github.com/russelltsherman/metatrader", "c:/metatrader"
+  # mount MetaTrader 4 source code project into C:/Users/vagrant/mt4
+  config.vm.synced_folder "/Users/russellsherman/src/github.com/russelltsherman/mt4", "C:/Users/vagrant/mt4"
+  # mount MetaTrader 5 source code project into C:/Users/vagrant/mt5
+  config.vm.synced_folder "/Users/russellsherman/src/github.com/russelltsherman/mt5", "C:/Users/vagrant/mt5"
 
   config.vm.provision "user-data", type: "shell", path: "provision.ps1", upload_path: "c:/vagrant/provision.ps1", privileged: true
 end
