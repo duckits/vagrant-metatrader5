@@ -22,8 +22,6 @@ Vagrant.configure("2") do |config|
   # mount this project directory to c:\vagrant
   config.vm.synced_folder "./", "c:/vagrant"
 
-  # mount MetaTrader 4 source code project into C:/Users/vagrant/mt4
-  config.vm.synced_folder "/Users/russellsherman/src/github.com/russelltsherman/mt4", "C:/Users/vagrant/mt4"
   # mount MetaTrader 5 source code project into C:/Users/vagrant/mt5
   config.vm.synced_folder "/Users/russellsherman/src/github.com/russelltsherman/mt5", "C:/Users/vagrant/mt5"
 
