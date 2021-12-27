@@ -34,6 +34,8 @@ Get-Service | Where {$_.Name -match "audio"} | set-service -StartupType "Automat
 # Validate our startup changes (Should say- StartMode:Auto)
 Get-WmiObject -class win32_service -filter "Name='AudioSrv'"
 
+Set-TimeZone -Name "Central Standard Time"
+
 $ScriptPath = Split-Path $MyInvocation.InvocationName
 
 # Define a list of MetaTrader Terminals to install
