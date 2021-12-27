@@ -14,16 +14,14 @@ trap {
 
 $hostName = "MetaTrader"
 
-Write-Host 'Enable auto logon...'
-Write-Host "###################################################################"
+#  enable vagrant user auto login
 $logonPath = 'HKLM:SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon'
 Set-ItemProperty -Path $logonPath -Name AutoAdminLogon -Value 1
 Set-ItemProperty -Path $logonPath -Name DefaultDomainName -Value $hostName
 Set-ItemProperty -Path $logonPath -Name DefaultUserName -Value vagrant
 Set-ItemProperty -Path $logonPath -Name DefaultPassword -Value vagrant
 
-Write-Host 'Show File Extensions'
-Write-Host "###################################################################"
+# always show file extensions
 Set-ItemProperty `
     -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced' `
     -Name 'HideFileExt' `
@@ -43,51 +41,92 @@ $ScriptPath = Split-Path $MyInvocation.InvocationName
 # Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\ig4setup.exe" -Wait
 # $installDir = "C:/Program Files (x86)/IG Metatrader 4 Terminal"
 
-Write-Host "###################################################################"
-Write-Host 'Install MetaTrader 4 (oanda)'
-Write-Host "###################################################################"
-Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\oanda4setup.exe" -Wait
-$installDir = 'C:/Program Files (x86)/OANDA - Metatrader'
+# Write-Host "###################################################################"
+# Write-Host 'Install MetaTrader 4 (oanda)'
+# Write-Host "###################################################################"
+# Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\oanda4setup.exe" -Wait
+# $installDir = 'C:/Program Files (x86)/OANDA - Metatrader'
 
 # # mt4setup downloaded from metatrader official actually installs mt5
 # Write-Host "###################################################################"
 # Write-Host 'Install MetaTrader 4'
 # Write-Host "###################################################################"
 # Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\mt4setup.exe" -Wait
-# # $installDir = "C:/Program Files/Metatrader"
+# $installDir = "C:/Program Files/Metatrader"
 
-# start the MetaTrader 5 terminal to generate the default MQL5 folders
+# # start the MetaTrader 5 terminal to generate the default MQL5 folders
 # Start-Process -FilePath "$installDir/terminal.exe"
 # Start-Sleep -Seconds 60 # pause a minute to let applications launch
 
-$dirs = @('config','MQL4','profiles','templates')
-# symlink our custom configuration into metatrader install
-for ($i=0; $i -lt $dirs.length; $i++) {
-  $dir = $dirs[$i]
-  $localPath = "$installDir/$dir"
-  If (test-path $localPath){
-    Rename-Item -path $localpath -newName "$localPath-og"
-  }
-  New-Item -ItemType SymbolicLink -Path $localPath -Target "C:/Users/vagrant/mt4/$dir/"
-}
+# $dirs = @('config','profiles','templates')
+# # symlink our custom configuration into metatrader install
+# for ($i=0; $i -lt $dirs.length; $i++) {
+#   $dir = $dirs[$i]
+#   $localPath = "$installDir/$dir"
+#   If (test-path $localPath){
+#     Rename-Item -path $localpath -newName "$localPath-og"
+#   }
+#   New-Item -ItemType SymbolicLink -Path $localPath -Target "C:/Users/vagrant/mt4/$dir/"
+# }
 
-Write-Host "###################################################################"
-Write-Host 'Install MetaTrader 5'
-Write-Host "###################################################################"
-Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\mt5setup.exe" -Wait
-# start the MetaTrader 5 terminal to generate the default MQL5 folders
-# Start-Process -FilePath "C:/Program Files/MetaTrader 5/terminal64.exe"
-# Start-Sleep -Seconds 60 # pause a minute to let applications launch
+# # get list of directories in C:/Users/vagrant/mt4/MQL4/
+# $dirs = Get-ChildItem C:/Users/vagrant/mt4/MQL4/ |
+#   Where-Object {$_.PSIsContainer} |
+#   Foreach-Object {$_.Name}
 
-# symlink our custom configuration into metatrader 5 install
-$dirs = @('Config','MQL5','Profiles')
-for ($i=0; $i -lt $dirs.length; $i++) {
-  $dir = $dirs[$i]
-  $localPath = "C:/Program Files/MetaTrader 5/$dir"
-  If (test-path $localPath){ # rename directory if it exists
-    Rename-Item -path $localpath -newName "$localPath-og"
+# for ($i=0; $i -lt $dirs.length; $i++) {
+#   $dir = $dirs[$i]
+#   $localPath = "$installDir/MQL4/$dir"
+#   If (test-path $localPath){ # rename directory if it exists
+#     Rename-Item -path $localpath -newName "$localPath-og"
+#   }
+#   Write-Host "linking $localPath -< C:/Users/vagrant/mt4/MQL4/$dir"
+#   New-Item -ItemType SymbolicLink -Path $localPath -Target "C:/Users/vagrant/mt4/MQL4/$dir"
+# }
+
+# Define a list of MetaTrader Terminals to install
+$terminals = @('Demo 1','Demo 2','Live 1','Live 2')
+
+for ($t=0; $t -lt $terminals.length; $t++) {
+  $terminal = $terminals[$t]
+  $install = "MetaTrader 5 - $terminal"
+  $installDir = "C:/Program Files/$install"
+  $dataDir = "$installDir/MQL5"
+
+  Write-Host "###################################################################"
+  Write-Host "Install $install"
+  Write-Host "###################################################################"
+  Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\mt5setup.exe" -Wait
+
+  # move auto install to install path
+  Rename-Item -Path "C:/Program Files/Metatrader 5" -NewName $installDir
+
+  # remove default desktop shortcut
+  Remove-Item -Path "C:/Users/*/Desktop/MetaTrader 5.lnk"
+
+  # create new desktop shortcut
+  $WshShell = New-Object -comObject WScript.Shell
+  $Shortcut = $WshShell.CreateShortcut("$Home/Desktop/$terminal.lnk")
+  $Shortcut.TargetPath = "$installDir/terminal64.exe"
+  $Shortcut.Save()
+
+  # create data directory
+  New-Item -ItemType Directory -Path $dataDir -Force
+
+  # get list of directories in C:/Users/vagrant/mt5/MQL5/
+  $dirs = Get-ChildItem C:/Users/vagrant/mt5/MQL5/ |
+    Where-Object {$_.PSIsContainer} |
+    Foreach-Object {$_.Name}
+
+  # create symlink from data dir to source dir
+  for ($i=0; $i -lt $dirs.length; $i++) {
+    $dir = $dirs[$i]
+    $localPath = "$dataDir/$dir"
+    If (test-path $localPath){ # rename directory if it exists
+      Rename-Item -path $localpath -newName "$localPath-og"
+    }
+    New-Item -ItemType SymbolicLink -Path $localPath -Target "C:/Users/vagrant/mt5/MQL5/$dir"
   }
-  New-Item -ItemType SymbolicLink -Path $localPath -Target "C:/Users/vagrant/mt5/$dir"
 }
 
 Rename-Computer -NewName $hostName -Force
