@@ -37,6 +37,7 @@ for ($t=0; $t -lt $terminals.length; $t++) {
   $install = "MetaTrader 5 - $terminal"
   $installDir = "C:/Program Files/$install"
   $dataDir = "$installDir/MQL5"
+  $mqlSourceDir = "C:/Users/vagrant/MQL5"
 
   Write-Host "###################################################################"
   Write-Host "Install $install"
@@ -56,23 +57,8 @@ for ($t=0; $t -lt $terminals.length; $t++) {
   $Shortcut.TargetPath = "$installDir/terminal64.exe"
   $Shortcut.Save()
 
-  # create data directory
-  New-Item -ItemType Directory -Path $dataDir -Force
-
-  # get list of directories in C:/Users/vagrant/mt5/MQL5/
-  $dirs = Get-ChildItem C:/Users/vagrant/mt5/MQL5/ |
-    Where-Object {$_.PSIsContainer} |
-    Foreach-Object {$_.Name}
-
-  # create symlink from data dir to source dir
-  for ($i=0; $i -lt $dirs.length; $i++) {
-    $dir = $dirs[$i]
-    $localPath = "$dataDir/$dir"
-    If (test-path $localPath){ # rename directory if it exists
-      Rename-Item -path $localpath -newName "$localPath-og"
-    }
-    New-Item -ItemType SymbolicLink -Path $localPath -Target "C:/Users/vagrant/mt5/MQL5/$dir"
-  }
+  # hard link MQL5 directory into $dataDir
+  New-Item -ItemType Junction -Path $dataDir -Value "C:/Users/vagrant/MQL5"
 }
 
 Rename-Computer -NewName $hostName -Force
