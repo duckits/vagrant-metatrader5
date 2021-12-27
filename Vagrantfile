@@ -16,6 +16,11 @@ Vagrant.configure("2") do |config|
     # Tweak these to fit your needs.
     vb.memory = "10240"
     vb.cpus = "4"
+
+    # enable audio output
+    vb.customize ["modifyvm", :id, "--audio", "coreaudio"]
+    vb.customize ["modifyvm", :id, "--audiocontroller", "hda"]
+    vb.customize ["modifyvm", :id, "--audioout", "on"]
   end
 
   # mount this project directory to c:\vagrant

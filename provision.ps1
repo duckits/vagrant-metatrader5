@@ -27,6 +27,13 @@ Set-ItemProperty `
     -Name 'HideFileExt' `
     -Value 0
 
+# enable audio service
+Get-Service | Where {$_.Name -match "audio"} | format-table -autosize
+Get-Service | Where {$_.Name -match "audio"} | start-service
+Get-Service | Where {$_.Name -match "audio"} | set-service -StartupType "Automatic"
+# Validate our startup changes (Should say- StartMode:Auto)
+Get-WmiObject -class win32_service -filter "Name='AudioSrv'"
+
 $ScriptPath = Split-Path $MyInvocation.InvocationName
 
 # Define a list of MetaTrader Terminals to install
