@@ -28,7 +28,7 @@ Vagrant.configure("2") do |config|
   # mount MetaTrader 5 source code project into C:/Users/vagrant/MQL5
   # https://github.com/russelltsherman/MQL5
   # clone this project to your local workstation and ensure the local path is correct before vagrant up
-  config.vm.synced_folder "/Users/russellsherman/src/github.com/russelltsherman/MQL5", "C:/Users/vagrant/MQL5"
+  config.vm.synced_folder "~/src/github.com/russelltsherman/MQL5", "C:/Users/vagrant/MQL5"
 
   config.vm.provision "user-data", type: "shell", path: "provision.ps1", upload_path: "c:/vagrant/provision.ps1", privileged: true
 end
