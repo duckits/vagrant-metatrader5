@@ -66,7 +66,7 @@ for ($t=0; $t -lt $terminals.length; $t++) {
   $Shortcut.TargetPath = "$installDir/terminal64.exe"
   $Shortcut.Save()
 
-  # hard link MQL5 directory into $dataDir
+  # link MQL5 directory into $dataDir
   New-Item -ItemType Junction -Path $dataDir -Value "C:/Users/vagrant/MQL5"
 }
 

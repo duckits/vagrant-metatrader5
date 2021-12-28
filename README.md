@@ -35,4 +35,4 @@ vagrant up
 
 after building the vm, if you launch metatrader using one of the desktop shortcuts you will encounter an condition where the default profile will be blank (no charts showing) and attempting to open a new chart will result in the error "C:\Program Files\MetaTrader 5 - Demo 1\MQL5\Profiles\Charts\Default\chart01.chr contains and incorrect path"
 
-if you open file explorer and navigate to "C:/Program Files/MetaTrader 5 - Demo 1" and open "terminal64.exe" the applicaiton will load correctly and not experience the error mentioned above. You will only need to open the application in this manner once.
+if you open file explorer and navigate to "C:/Program Files/MetaTrader 5 - Demo 1" and open "terminal64.exe" the applicaiton will load correctly and not experience the error mentioned above. You will only need to open the application in this manner once per system restart.
