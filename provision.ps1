@@ -14,6 +14,9 @@ trap {
 
 $hostName = "MetaTrader"
 
+# remove start menu shortcuts for Oracle VM VirtualBox guest Additions
+Remove-Item -Path "C:/Users/vagrant/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Oracle VM VirtualBox guest Additions" -Recurse
+
 #  enable vagrant user auto login
 $logonPath = 'HKLM:SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon'
 Set-ItemProperty -Path $logonPath -Name AutoAdminLogon -Value 1
@@ -53,12 +56,15 @@ for ($t=0; $t -lt $terminals.length; $t++) {
   Write-Host "###################################################################"
   Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\mt5setup.exe" -Wait
 
-  # move auto install to install path
-  Rename-Item -Path "C:/Program Files/Metatrader 5" -NewName $installDir
-
   # remove default desktop shortcut
   Remove-Item -Path "C:/Users/*/Desktop/MetaTrader 5.lnk"
   Remove-Item -Path "C:/Users/*/Desktop/MetaEditor 5.lnk"
+
+  # remove default start menu shortcuts
+  Remove-Item -Path "C:/ProgramData/Microsoft/Windows/Start Menu/Programs/MetaTrader 5" -Recurse
+
+  # move /auto install to new install path
+  Rename-Item -Path "C:/Program Files/Metatrader 5" -NewName $installDir
 
   # create new desktop shortcut
   $WshShell = New-Object -comObject WScript.Shell

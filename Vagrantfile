@@ -23,7 +23,7 @@ Vagrant.configure("2") do |config|
   end
 
   # mount this project directory to c:\vagrant
-  config.vm.synced_folder "./", "c:/vagrant"
+  config.vm.synced_folder "./", "C:/vagrant"
 
   # mount MetaTrader 5 source code project into C:/Users/vagrant/MQL5
   # https://github.com/russelltsherman/MQL5
