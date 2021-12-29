@@ -14,23 +14,26 @@ trap {
 
 $hostName = "MetaTrader"
 
-# remove start menu shortcuts for Oracle VM VirtualBox guest Additions
-Remove-Item -Path "C:/Users/vagrant/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Oracle VM VirtualBox guest Additions" -Recurse
-
-#  enable vagrant user auto login
+Write-Host "###################################################################"
+Write-Host "Enable auto login vagrant user"
+Write-Host "###################################################################"
 $logonPath = 'HKLM:SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon'
 Set-ItemProperty -Path $logonPath -Name AutoAdminLogon -Value 1
 Set-ItemProperty -Path $logonPath -Name DefaultDomainName -Value $hostName
 Set-ItemProperty -Path $logonPath -Name DefaultUserName -Value vagrant
 Set-ItemProperty -Path $logonPath -Name DefaultPassword -Value vagrant
 
-# always show file extensions
+Write-Host "###################################################################"
+Write-Host "Always show file extensions"
+Write-Host "###################################################################"
 Set-ItemProperty `
     -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced' `
     -Name 'HideFileExt' `
     -Value 0
 
-# enable audio service
+Write-Host "###################################################################"
+Write-Host "Enable audio service"
+Write-Host "###################################################################"
 Get-Service | Where {$_.Name -match "audio"} | format-table -autosize
 Get-Service | Where {$_.Name -match "audio"} | start-service
 Get-Service | Where {$_.Name -match "audio"} | set-service -StartupType "Automatic"
@@ -42,14 +45,14 @@ Set-TimeZone -Name "Central Standard Time"
 $ScriptPath = Split-Path $MyInvocation.InvocationName
 
 # Define a list of MetaTrader Terminals to install
-$terminals = @('Demo 1','Demo 2','Live 1','Live 2')
+$terminals = @('Demo','Live')
 
 for ($t=0; $t -lt $terminals.length; $t++) {
   $terminal = $terminals[$t]
   $install = "MetaTrader 5 - $terminal"
   $installDir = "C:/Program Files/$install"
   $dataDir = "$installDir/MQL5"
-  $mqlSourceDir = "C:/Users/vagrant/MQL5"
+  $mqlSourceDir = "$Home/MQL5"
 
   Write-Host "###################################################################"
   Write-Host "Install $install"
@@ -61,7 +64,7 @@ for ($t=0; $t -lt $terminals.length; $t++) {
   Remove-Item -Path "C:/Users/*/Desktop/MetaEditor 5.lnk"
 
   # remove default start menu shortcuts
-  Remove-Item -Path "C:/ProgramData/Microsoft/Windows/Start Menu/Programs/MetaTrader 5" -Recurse
+  Remove-Item -Path "$Env:ProgramData/Microsoft/Windows/Start Menu/Programs/MetaTrader 5" -Recurse
 
   # move /auto install to new install path
   Rename-Item -Path "C:/Program Files/Metatrader 5" -NewName $installDir
@@ -73,11 +76,16 @@ for ($t=0; $t -lt $terminals.length; $t++) {
   $Shortcut.Save()
 
   # link MQL5 directory into $dataDir
-  New-Item -ItemType Junction -Path $dataDir -Value "C:/Users/vagrant/MQL5"
+  New-Item -ItemType Junction -Path $dataDir -Value $mqlSourceDir
 }
 
-Rename-Computer -NewName $hostName -Force
+# remove user start menu shortcuts
+Remove-Item -Path "$Env:APPDATA/Microsoft/Windows/Start Menu/Programs/Oracle VM VirtualBox guest Additions" -Recurse
 
+Write-Host "###################################################################"
+Write-Host "Rename host and restart"
+Write-Host "###################################################################"
+Rename-Computer -NewName $hostName -Force
 Start-Process `
   -ArgumentList '/c "timeout /t 3 /nobreak && shutdown -r -f -t 0"' `
   -FilePath "cmd.exe" `
