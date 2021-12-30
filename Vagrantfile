@@ -13,8 +13,8 @@ Vagrant.configure("2") do |config|
     vb.gui = true
 
     # Adjust these to fit your host.
-    vb.memory = "10240"
-    vb.cpus = "4"
+    vb.memory = 1024*8
+    vb.cpus = 4
 
     # enable audio output
     vb.customize ["modifyvm", :id, "--audio", "coreaudio"]
