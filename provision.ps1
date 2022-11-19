@@ -44,7 +44,62 @@ Set-TimeZone -Name "Central Standard Time"
 
 $ScriptPath = Split-Path $MyInvocation.InvocationName
 
-# Define a list of MetaTrader Terminals to install
+# Write-Host "###################################################################"
+# Write-Host 'Install MetaTrader 4 (forexcom)'
+# Write-Host "###################################################################"
+# Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\forexcom4setup.exe" -Wait
+# $installDir = "C:/Program Files (x86)/FOREX.com US"
+
+# Write-Host "###################################################################"
+# Write-Host 'Install MetaTrader 4 (ig)'
+# Write-Host "###################################################################"
+# Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\ig4setup.exe" -Wait
+# $installDir = "C:/Program Files (x86)/IG Metatrader 4 Terminal"
+
+# Write-Host "###################################################################"
+# Write-Host 'Install MetaTrader 4 (oanda)'
+# Write-Host "###################################################################"
+# Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\oanda4setup.exe" -Wait
+# $installDir = 'C:/Program Files (x86)/OANDA - Metatrader'
+
+# # mt4setup downloaded from metatrader official actually installs mt5
+# Write-Host "###################################################################"
+# Write-Host 'Install MetaTrader 4'
+# Write-Host "###################################################################"
+# Start-Process -ArgumentList '/auto' -FilePath "$ScriptPath\mt4setup.exe" -Wait
+# $installDir = "C:/Program Files/Metatrader"
+
+# # start the MetaTrader 5 terminal to generate the default MQL5 folders
+# Start-Process -FilePath "$installDir/terminal.exe"
+# Start-Sleep -Seconds 60 # pause a minute to let applications launch
+
+# $dirs = @('config','profiles','templates')
+# # symlink our custom configuration into metatrader install
+# for ($i=0; $i -lt $dirs.length; $i++) {
+#   $dir = $dirs[$i]
+#   $localPath = "$installDir/$dir"
+#   If (test-path $localPath){
+#     Rename-Item -path $localpath -newName "$localPath-og"
+#   }
+#   New-Item -ItemType SymbolicLink -Path $localPath -Target "C:/Users/vagrant/mt4/$dir/"
+# }
+
+# # get list of directories in C:/Users/vagrant/mt4/MQL4/
+# $dirs = Get-ChildItem C:/Users/vagrant/mt4/MQL4/ |
+#   Where-Object {$_.PSIsContainer} |
+#   Foreach-Object {$_.Name}
+
+# for ($i=0; $i -lt $dirs.length; $i++) {
+#   $dir = $dirs[$i]
+#   $localPath = "$installDir/MQL4/$dir"
+#   If (test-path $localPath){ # rename directory if it exists
+#     Rename-Item -path $localpath -newName "$localPath-og"
+#   }
+#   Write-Host "linking $localPath -< C:/Users/vagrant/mt4/MQL4/$dir"
+#   New-Item -ItemType SymbolicLink -Path $localPath -Target "C:/Users/vagrant/mt4/MQL4/$dir"
+# }
+
+# Define a list of MetaTrader 5 Terminals to install
 $terminals = @('Demo','Live')
 
 for ($t=0; $t -lt $terminals.length; $t++) {

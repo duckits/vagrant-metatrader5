@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
   config.vm.box = "windows-2022-amd64"
 
   config.vm.provider "virtualbox" do |vb|
-    vb.name = "MetaTrader"
+    vb.name = "MetaTrader5"
     vb.gui = true
 
     # Adjust these to fit your host.
